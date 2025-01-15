@@ -40,4 +40,24 @@ public class User {
         this.numberOfSchedules = 0;
     }
 
+    public void addCourse(Course course) {
+        this.courses.add(course);
+        course.setUser(this);
+    }
+
+    public void addSchedule(Schedule schedule) {
+        this.schedules.add(schedule);
+        schedule.setUser(this);
+    }
+
+    public void removeCourse(Course course) {
+        this.courses.remove(course);
+        course.setUser(null);
+    }
+
+    public void removeSchedule(Schedule schedule) {
+        this.schedules.remove(schedule);
+        schedule.setUser(null);
+    }
+
 }

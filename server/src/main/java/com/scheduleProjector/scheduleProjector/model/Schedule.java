@@ -34,4 +34,9 @@ public class Schedule {
         this.user = user;
     }
 
+    public void addScheduleItem(ScheduleItem scheduleItem) {
+        scheduleItem.setSchedule(this);
+        scheduleItems.add(scheduleItem);
+    }
+
 }
