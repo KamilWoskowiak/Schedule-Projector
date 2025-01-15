@@ -6,6 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-    Optional<Schedule> findById(Long id);
-    List<Schedule> findAllByUserId(Long userId>
+    Optional<Schedule> findByNameAndUserId(String name, Long userId);
+    List<Schedule> findAllByUserId(Long userId);
 }
