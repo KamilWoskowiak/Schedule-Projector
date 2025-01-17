@@ -42,7 +42,7 @@ public class User implements UserDetails {
     private List<Schedule> schedules = new ArrayList<>();
 
     @Lob
-    @Column(name = "semesters", columnDefinition = "JSON")
+    @Column(name = "semesters", columnDefinition = "TEXT")
     private String semesters;
 
     public User() {
