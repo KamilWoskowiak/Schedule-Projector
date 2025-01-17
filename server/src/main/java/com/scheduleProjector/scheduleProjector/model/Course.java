@@ -1,12 +1,11 @@
 package com.scheduleProjector.scheduleProjector.model;
 
 import jakarta.persistence.*;
-import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "courses")
+@Table(name = "course")
 @Getter @Setter
 public class Course {
 
@@ -14,22 +13,14 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(50)")
+    @Column(name = "name", nullable = false, columnDefinition = "VARCHAR(50)")
     private String name;
 
-    @Column(nullable = false, columnDefinition = "SMALLINT")
-    private int credits;
+    @Column(name = "credits", nullable = false, columnDefinition = "SMALLINT")
+    private Integer credits;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
-    public Course() {}
-
-    public Course(String name, int credits, User user) {
-        this.name = name;
-        this.credits = credits;
-        this.user = user;
-    }
 
 }

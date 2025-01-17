@@ -1,7 +1,6 @@
 package com.scheduleProjector.scheduleProjector.model;
 
 import jakarta.persistence.*;
-import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "schedules")
+@Table(name = "schedule_item")
 @Getter @Setter
 public class Schedule {
 
@@ -17,26 +16,14 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(50)")
-    private String name;
-
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ScheduleItem> scheduleItems = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Schedule() {}
+    @Column(name = "name", nullable = false, columnDefinition = "VARCHAR(50)")
+    private String name;
 
-    public Schedule(String name, User user) {
-        this.name = name;
-        this.user = user;
-    }
-
-    public void addScheduleItem(ScheduleItem scheduleItem) {
-        scheduleItem.setSchedule(this);
-        scheduleItems.add(scheduleItem);
-    }
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CourseSemester> courseSemesters = new ArrayList<>();
 
 }

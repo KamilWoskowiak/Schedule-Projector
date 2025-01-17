@@ -5,16 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "schedule_items")
+@Table(name = "course_semester")
 @Getter @Setter
-public class ScheduleItem {
+public class CourseSemester {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, columnDefinition = "varchar(10)")
-    private String semester;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
@@ -24,12 +21,7 @@ public class ScheduleItem {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    public ScheduleItem() {}
-
-    public ScheduleItem(String semester, Schedule schedule, Course course) {
-        this.semester = semester;
-        this.schedule = schedule;
-        this.course = course;
-    }
+    @Column(name = "semester")
+    private String semester;
 
 }
