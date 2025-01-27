@@ -47,20 +47,4 @@ public class User {
         this.provider = provider;
         this.numberOfSchedules = 0;
     }
-
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
-    }
 }

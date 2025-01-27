@@ -1,54 +1,81 @@
 package com.scheduleProjector.scheduleProjector.controller;
 
-import com.scheduleProjector.scheduleProjector.service.TokenService;
-import io.jsonwebtoken.Claims;
+import com.scheduleProjector.scheduleProjector.dto.AuthDto;
+import com.scheduleProjector.scheduleProjector.dto.LoginDto;
+import com.scheduleProjector.scheduleProjector.service.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
+
+import java.security.GeneralSecurityException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
-    private final TokenService tokenService;
+    private final AuthService authService;
 
-    public AuthController(TokenService tokenService) {
-        this.tokenService = tokenService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
-    @GetMapping("/success")
-    public ResponseEntity<?> success(Authentication authentication) {
-        if (authentication == null) {
-            return ResponseEntity.badRequest().body("No authentication found");
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+            @RequestBody LoginDto loginDto
+    ) {
+        String provider = loginDto.getProvider();
+        String idTokenString = loginDto.getTokenId();
+
+        if (provider == null || idTokenString == null) {
+            return ResponseEntity.badRequest().body("Missing provider or tokenId");
         }
 
-        String email = authentication.getName();
+        try {
+            AuthDto authDto = authService.auth(provider, idTokenString);
 
-        String accessToken = tokenService.generateToken(email);
-        String refreshToken = tokenService.generateRefreshToken(email);
+            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", authDto.getRefreshToken())
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/api/auth")
+                    .maxAge(7L * 24 * 60 * 60)
+                    .sameSite("Strict")
+                    .build();
 
-        return ResponseEntity.ok().body(
-                "Access Token: " + accessToken + "\nRefresh Token: " + refreshToken
-        );
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("accessToken", authDto.getAccessToken());
+            responseBody.put("message", "Successfully logged in");
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                    .body(responseBody);
+        } catch (GeneralSecurityException e) {
+            return ResponseEntity.status(401).body("Invalid token");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody RefreshRequest request) {
-        String refreshToken = request.getRefreshToken();
-        if (!tokenService.validateToken(refreshToken)) {
-            return ResponseEntity.badRequest().body("Invalid refresh token");
+    public ResponseEntity<?> refresh(
+            @CookieValue(name="refreshToken", required = false) String refreshToken
+    ) {
+        if (refreshToken == null) {
+            return ResponseEntity.badRequest().body("No refresh token provided");
         }
 
-        Claims claims = tokenService.getClaims(refreshToken);
-        String email = claims.getSubject();
+        try {
+            String newAccessToken = authService.refreshAccessToken(refreshToken);
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("accessToken", newAccessToken);
+            responseBody.put("message", "Access token refreshed successfully");
 
-        String newAccessToken = tokenService.generateToken(email);
-        return ResponseEntity.ok().body("New Access Token: " + newAccessToken);
-    }
-
-    public static class RefreshRequest {
-        private String refreshToken;
-        public String getRefreshToken() { return refreshToken; }
-        public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
+            return ResponseEntity.ok().body(responseBody);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
     }
 }
