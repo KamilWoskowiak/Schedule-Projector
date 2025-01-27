@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> findByUser(User user);
     Optional<Course> findByNameAndUser(String name, User user);
+    void deleteByNameAndUser(String name, User user);
 }
