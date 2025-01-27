@@ -6,13 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(
         name = "course",
         uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "name"})
-})
-@Getter @Setter @AllArgsConstructor @NoArgsConstructor
+                @UniqueConstraint(columnNames = {"user_id", "name"})
+        })
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Course {
 
     @Id
@@ -28,6 +34,14 @@ public class Course {
     @Column(name = "prerequisites", columnDefinition = "TEXT")
     private String prerequisites;
 
+    @ManyToMany
+    @JoinTable(
+            name = "course_semester",
+            joinColumns = @JoinColumn(name = "course_id"),
+            inverseJoinColumns = @JoinColumn(name = "semester_id")
+    )
+    private List<Semester> semesters = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -37,5 +51,15 @@ public class Course {
         this.credits = credits;
         this.prerequisites = prerequisites;
         this.user = user;
+    }
+
+    public void addSemester(Semester semester) {
+        this.semesters.add(semester);
+        semester.getCourses().add(this);
+    }
+
+    public void removeSemester(Semester semester) {
+        this.semesters.remove(semester);
+        semester.getCourses().remove(this);
     }
 }

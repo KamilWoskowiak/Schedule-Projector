@@ -35,10 +35,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Schedule> schedules = new ArrayList<>();
 
-    @Lob
-    @Column(name = "semesters", columnDefinition = "TEXT")
-    private String semesters;
-
     public User() {
     }
 

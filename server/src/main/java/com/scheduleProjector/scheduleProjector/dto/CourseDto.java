@@ -10,4 +10,5 @@ public class CourseDto {
     private String name;
     private Integer credits;
     private String prerequisites;
+    private String[] semesters;
 }
