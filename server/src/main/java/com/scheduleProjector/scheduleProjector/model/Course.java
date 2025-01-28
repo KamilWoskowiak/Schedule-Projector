@@ -54,11 +54,13 @@ public class Course {
     }
 
     public void addSemester(Semester semester) {
+        if (semester == null) return;
         this.semesters.add(semester);
         semester.getCourses().add(this);
     }
 
     public void removeSemester(Semester semester) {
+        if (semester == null) return;
         this.semesters.remove(semester);
         semester.getCourses().remove(this);
     }
