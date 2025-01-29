@@ -1,5 +1,6 @@
 package com.scheduleProjector.scheduleProjector.model;
 
+import com.scheduleProjector.scheduleProjector.dto.SemesterDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,6 +39,10 @@ public class Semester {
         this.name = name;
         this.maxCredits = maxCredits;
         this.user = user;
+    }
+
+    public SemesterDto toDto() {
+        return new SemesterDto(name, maxCredits);
     }
 
 }

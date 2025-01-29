@@ -1,6 +1,7 @@
 package com.scheduleProjector.scheduleProjector.controller;
 
 import com.scheduleProjector.scheduleProjector.dto.BulkDataDto;
+import com.scheduleProjector.scheduleProjector.dto.DataNamesDto;
 import com.scheduleProjector.scheduleProjector.model.User;
 import com.scheduleProjector.scheduleProjector.service.DataHandlerService;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +52,7 @@ public class DataHandlerController {
 
     @DeleteMapping()
     public ResponseEntity<?> deleteData(
-            @RequestBody String[] data,
+            @RequestBody DataNamesDto data,
             Authentication authentication
     ) {
         String email = (String) authentication.getPrincipal();
@@ -64,7 +65,6 @@ public class DataHandlerController {
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
-    )
 
 
 }

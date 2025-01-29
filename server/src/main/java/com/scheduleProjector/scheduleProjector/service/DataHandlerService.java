@@ -2,6 +2,7 @@ package com.scheduleProjector.scheduleProjector.service;
 
 import com.scheduleProjector.scheduleProjector.dto.BulkDataDto;
 import com.scheduleProjector.scheduleProjector.dto.CourseDto;
+import com.scheduleProjector.scheduleProjector.dto.DataNamesDto;
 import com.scheduleProjector.scheduleProjector.dto.SemesterDto;
 import com.scheduleProjector.scheduleProjector.model.Course;
 import com.scheduleProjector.scheduleProjector.model.Semester;
@@ -40,6 +41,38 @@ public class DataHandlerService {
         }
 
         processCourses(data.getCourses(), semesterMap, user);
+
+    }
+
+    public BulkDataDto getData(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+
+        List<Semester> semesters = semesterRepository.findByUser(user);
+        List<Course> courses = courseRepository.findByUser(user);
+
+        List<SemesterDto> semesterData = semesters.stream().map(Semester::toDto).toList();
+        List<CourseDto> courseData = courses.stream().map(Course::toDto).toList();
+
+        return new BulkDataDto(courseData, semesterData);
+
+    }
+
+    public void deleteData(DataNamesDto data, String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+
+        for (String courseName : data.getCourseNames()) {
+            courseRepository.findByNameAndUser(courseName, user).ifPresent(Course::removeAllSemesters);
+            courseRepository.deleteByNameAndUser(courseName, user);
+        }
+
+        for (String semesterName : data.getSemesterNames()) {
+            courseRepository.deleteByNameAndUser(semesterName, user);
+        }
+
 
     }
 

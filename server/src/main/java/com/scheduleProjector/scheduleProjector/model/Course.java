@@ -1,5 +1,6 @@
 package com.scheduleProjector.scheduleProjector.model;
 
+import com.scheduleProjector.scheduleProjector.dto.CourseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -63,5 +64,14 @@ public class Course {
         if (semester == null) return;
         this.semesters.remove(semester);
         semester.getCourses().remove(this);
+    }
+
+    public void removeAllSemesters() {
+        this.semesters.forEach(semester -> semester.getCourses().remove(this));
+        this.semesters.clear();
+    }
+
+    public CourseDto toDto() {
+        return new CourseDto(this.name, this.credits, this.prerequisites, this.semesters.stream().map(Semester::getName).toArray(String[]::new));
     }
 }
