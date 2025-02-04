@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { LogOut } from "lucide-react"
 
-export const Navbar: React.FC = () => {
+const Navbar: React.FC = () => {
   const location = useLocation()
 
   return (
@@ -34,3 +34,5 @@ export const Navbar: React.FC = () => {
     </nav>
   )
 }
+
+export default Navbar;
