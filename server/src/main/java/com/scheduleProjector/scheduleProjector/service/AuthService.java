@@ -55,4 +55,8 @@ public class AuthService {
         String email = jwtUtils.validateRefreshToken(refreshToken);
         return jwtUtils.generateAccessToken(email);
     }
+
+    public String nullRefreshToken() {
+        return jwtUtils.generateRefreshToken(null);
+    }
 }
